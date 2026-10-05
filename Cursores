@@ -1,0 +1,127 @@
+-- Listar productos con Cursores
+DELIMITER //
+
+CREATE PROCEDURE listar_productos()
+BEGIN
+    DECLARE v_id INT;
+    DECLARE v_nombre VARCHAR(100);
+    DECLARE v_precio DECIMAL(10,2);
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_productos CURSOR FOR 
+        SELECT id, nombre, precio FROM productos;
+        
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+    OPEN cur_productos;
+
+    bucle: LOOP
+        FETCH cur_productos INTO v_id, v_nombre, v_precio;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+
+        SELECT CONCAT('ID: ', v_id, ' | Producto: ', v_nombre, ' | Precio: $', v_precio) AS Info;
+    END LOOP;
+
+    CLOSE cur_productos;
+END //
+
+DELIMITER ;
+
+--Recorrer provincias
+
+DELIMITER //
+
+CREATE PROCEDURE listar_provincias()
+BEGIN
+    DECLARE v_nombre VARCHAR(100);
+    DECLARE v_capital VARCHAR(100);
+    DECLARE v_poblacion INT;
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_provincias CURSOR FOR 
+        SELECT nombre, capital, poblacion FROM provincias;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+    OPEN cur_provincias;
+
+    bucle: LOOP
+        FETCH cur_provincias INTO v_nombre, v_capital, v_poblacion;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+
+        SELECT CONCAT('Provincia: ', v_nombre, ' | Capital: ', v_capital, ' | Población: ', v_poblacion) AS Info;
+    END LOOP;
+
+    CLOSE cur_provincias;
+END //
+
+DELIMITER ;
+
+-- Productos sin stock
+DELIMITER //
+
+CREATE PROCEDURE productos_sin_stock()
+BEGIN
+    DECLARE v_nombre VARCHAR(100);
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_sin_stock CURSOR FOR 
+        SELECT nombre FROM productos WHERE stock = 0;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+    OPEN cur_sin_stock;
+
+    bucle: LOOP
+        FETCH cur_sin_stock INTO v_nombre;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+
+        SELECT CONCAT('Producto sin stock: ', v_nombre) AS Alerta;
+    END LOOP;
+
+    CLOSE cur_sin_stock;
+END //
+
+DELIMITER ;
+
+--Determinar categoria por precio
+
+DELIMITER//
+BEGIN
+
+  DECLARE v_nombre VARCHAR(100),
+  DECLARE v_precio DECIMAL(10,2);
+  DECLARE v_categoria VARCHAR(20);
+  DECLARE fin INT DEFAULT FALSE;
+
+  DECLARE cur_precio CURSOR FOR
+    SELECT nombre, precio from productos;
+
+  OPEN cur_precio;
+
+  bucle: LOOP
+    FETCH cur_precio INTO v_nombre, v_precio;
+    IF fin THEN
+      LEAVE bucle;
+    END IF;
+    IF v_precio < 10000 THEN
+      SET v_categoria = 'BARATO';
+    ELSEIF v_precio => 10000 AND v_precio < 50000 THEN
+      SET v_categoria = 'MEDIO';
+    ELSE
+      SET v_categoria = "CARO";
+    END IF;
+
+    SELEC CONCAT('Producto: ', v_nombre, ' | Precio: $', v_precio, ' | Categoria: ', v_categoria) AS Info;
+  END LOOP;
+
+  CLOSE cur_precio;
+END//
+
+DELIMITER;
