@@ -162,3 +162,108 @@ BEGIN
 END//
 
 DELIMITER;
+
+--Aumentar precios: 20% si <10000 y 10% si => a 10000
+
+DELIMETER//
+BEGIN
+
+    DECLARE v_id INT;
+    DECLARE v_precio DECIMAL(10,2);
+    DECLARE v_nuevoprecio DECIMAL(10,2);
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_aumentoprecio CURSOR FOR
+        SELECT id, precio FROM productos
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+    OPEN cur_aumentoprecio;
+
+    bucle: LOOP
+        FETCH cur_aumentoprecio INTO v_id, v_precio;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+        IF v_precio < 10000 THEN
+            v_nuevoprecio = v_precio * 1.20,
+        ELSE
+            v_nuevoprecio = vprecio * 1.10,
+        END IF,
+
+        UPDATE productos SET precio = v_nuevoprecio WHERE id = v_nuevoprecio;
+    END LOOP;
+    CLOSE cur_aumentoprecio;
+END//
+
+DELIMITER;
+
+--Actualizar stock: +10 si < 5, +5 si >= 5 y <20
+
+DELIMITER//
+BEGIN
+
+    DECLARE v_id INT;
+    DECLARE v_stock;
+    DECLARE v_nuevostock;
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_aumentostock CURSOR FOR
+        SELECT id, stock FROM productos;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND IN SET fin = TRUE;
+
+    OPEN cur_aumentostock;
+
+    bucle:LOOP    
+        FETCH cur_aumentostock INTO v_id, v_stock;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+        IF v_stock < 5 THEN
+            v_nuevostock = v_stock+10,
+        ELSEIF v_stock => 5 AND <20 THEN
+            v_nuevostock = v_stock+5;
+        END IF;
+
+        UPDATE productos SET stock = v_nuevostock WHERE id = v_id;
+
+    END LOOP;
+    CLOSE cur_aumentostock;
+END//
+
+DELIMITER;
+
+--Listar compras con informacion del cliente
+
+DELIMITER//
+BEGIN
+
+    DECLARE v_id_compra INT;
+    DECLARE v_cliente VARCHAR(100);
+    DECLARE v_producto VARCHAR(100);
+    DECLARE v_cantidad INT;
+    DECLARE v_fecha DATETIME;
+    DECLARE din INT DEFAULT FALSE;
+
+    DECLARE cur_compras CURSOR FOR
+        SELECT 
+            c.id,
+            cl.nombre AS cliente,
+            p.nombre AS producto,
+            c.cantidad,
+            c.fecha
+        FROM compras c
+        JOIN clientes cl on c.id_cliente = cl.id
+        JOIN productos p on c.id_producto = p.id;
+
+    DECLARE CONTINUE HANDLER FOR NOT IN SET fin = TRUE;
+
+    OPEN cur_compras;
+
+    bucle:LOOP
+        FETCH cur_compras INTO v_id_compra, v_cliente, v_producto, v_cantidad, v_fecha;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+        
