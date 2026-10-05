@@ -103,6 +103,8 @@ BEGIN
   DECLARE cur_precio CURSOR FOR
     SELECT nombre, precio from productos;
 
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
   OPEN cur_precio;
 
   bucle: LOOP
@@ -122,6 +124,41 @@ BEGIN
   END LOOP;
 
   CLOSE cur_precio;
+END//
+
+DELIMITER;
+
+-- calcular stock total
+
+DELIMITER//
+BEGIN
+
+    DECLARE v_nombre VARCHAR(100);
+    DECLARE v_precio DECIMAL(10,2);
+    DECLARE v_stock INT;
+    DECLARE v_total DECIMAL(10,2);
+    DECLARE v_subtotal DECIMAL(10,2);
+    DECLARE fin INT DEFAULT FALSE;
+
+    DECLARE cur_preciototal CURSOR FOR
+        SELECT nombre, precio, stock FROM productos
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+    OPEN cur_preciototal;
+
+    bucle: LOOP
+        FETCH cur_preciototal INTO v_nombre, v_precio, v_stock;
+        IF fin THEN
+            LEAVE bucle;
+        END IF;
+        SET v_total = producto*stock;
+        SELECT CONCAT('Producto: ', v_nombre, ' | Precio: $', v_precio, ' | Stock: ', v_stock, ' | Subtotal: $', v_subtotal) AS Subtotal;
+    END LOOP;
+
+    CLOSE cur_preciototal;
+
+    SELECT CONCAT('EL TOTAL ES DE: $', v_total) AS TOTAL,
 END//
 
 DELIMITER;
