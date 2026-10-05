@@ -1,0 +1,45 @@
+--Capitalizar la primer letra de cada cliente
+
+DELIMITER//
+CREATE PROCEDURE capitalizar_nombre_clientes();
+BEGIN
+  DECLARE v_id INT;
+  DECLARE v_nombre VARCHAR(100);
+  DECLARE v_nombrenuevo VARCHAR(100);
+  DECLARE FIN INT DEFAULT FALSE;
+
+  DECLARE cur_clientes CURSOR FOR
+    SELECT id, nombre FROM clientes;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+  OPEN cur_clientes;
+
+  bucle:LOOP
+    FETCH cur_clientes INTO v_id, v_nombre;
+    IF fin THEN
+      LEAVE bucle;
+    END IF;
+    SET v_nombrenuevo = CONCAT(
+      UPPER(LEFT(v_nombre, 1),
+      LOWER(SUBSTRING(v_nombre, 2))
+    );
+
+    UPDATE clientes SET nombre = v_nombrenuevo WHERE id = v_id;
+
+  END LOOP;
+  CLOSE cur_clientes;
+END//
+
+DELIMITER;
+
+--Subtotal por region y ranking de provincias por poblacion
+
+DELIMITER//
+
+CREATE PROCEDURE subtotal_y_ranking_provincias(),
+BEGIN
+
+  DECLARE v_provincia VARCHAR(100);
+  DECLARE v_region VARCHAR(100);
+  DECLARE v_poblacion INT;
