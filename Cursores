@@ -267,3 +267,17 @@ BEGIN
             LEAVE bucle;
         END IF;
         
+        SELECT CONCAT(
+            'Compra: #', v_id_comrpa, 
+            ' | Cliente: ', v_cliente, 
+            ' | Producto: ', v_producto, 
+            ' | Cantidad: ', v_cantidad, 
+            ' | Fecha: ', v_fecha) AS Detallecompra;
+
+    END LOOP;
+    CLOSE cur_compras;
+END//
+
+DELIMITER;
+
+--FIN
