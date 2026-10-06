@@ -43,3 +43,41 @@ BEGIN
   DECLARE v_provincia VARCHAR(100);
   DECLARE v_region VARCHAR(100);
   DECLARE v_poblacion INT;
+  DECLARE V_region_actual VARCHAR(100) DEFAULT '';
+  DECLARE v_subtotal_region BIGINT DEFAULT 0;
+  DECLARE v_rank INT DEFAULT 0;
+  DECLARE finINT DEFAULT FALSE;
+
+  DECLARE cur_poblacion CURSOR FOR
+    SELECT provincia, region, poblacion 
+    FROM provincias
+    ORDER BY region ASC, poblacion DESC;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+  OPEN cur_poblacion;
+
+  bucle:LOOP
+    FETCH cur_poblacion INTO v_provincia, v_region, v_poblacion;
+    IF fin THEN
+      IF v_region_actual != '' THEN
+        SELECT CONCAT('TOTAL REGION ', v_region_actual, ': ', v_subtotal_region, ' HABITANTES) AS Subtotal;
+      END IF;
+      LEAVE bucle;
+
+    IF v_region_actual != '' AND v_region_actual != v_region THEN
+      SELECT CONCAT('TOTAL REGION ', v_region_actual, ': ', v_subtotal_region, ' HABITANTES) AS Subtotal;
+      SET v_subtotal_region = 0;
+      SET v_rank = 0;
+    END IF;
+
+    SET v_region_actual = v_region;
+    SET v_subtotal_region = v_subtotal_region + v_poblacion;
+    SET v_rank = v_rank + 1;
+
+    SELECT CONCAT('Region: ', v_region, ' | Ranking #', v_rank, ' | Provincia: ' v_provincia, ' | Poblacion: ', v_poblacion) AS Detalle;
+  END LOOP;
+  CLOSE cur_poblacion;
+END//
+
+DELIMITER;
