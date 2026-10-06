@@ -1,4 +1,4 @@
---Capitalizar la primer letra de cada cliente
+--1 Capitalizar la primer letra de cada cliente
 
 DELIMITER//
 CREATE PROCEDURE capitalizar_nombre_clientes();
@@ -33,7 +33,7 @@ END//
 
 DELIMITER;
 
---Subtotal por region y ranking de provincias por poblacion
+--2 Subtotal por region y ranking de provincias por poblacion
 
 DELIMITER//
 
@@ -82,7 +82,7 @@ END//
 
 DELIMITER;
 
---Actualizar stocks con tabla auditoria
+--3 Actualizar stocks con tabla auditoria
 
 DELIMITER //
 
@@ -116,3 +116,28 @@ BEGIN
 END//
 
 DELIMITER;
+
+--4 Cliente favorito por ciudad
+
+DELIMITER //
+
+CREATE FUNCTION contar_compras_clientes(p_id_cliente INT);
+RETURNS INT
+DETERMINISTIC
+BEGIN
+  DECLARE v_total INT;
+  SELECT COUNT(*) INTO v_total FROM compras WHERE id_cliente = p_id_cliente;
+  RETURN v_total;
+END //
+
+DELIMITER;
+
+DELIMITER //
+
+CREATE PROCEDURE clientes_favoritos_por_ciudad();
+BEGIN
+  DECLARE v_ciudad VARCHAR(100);
+  DECLARE v_id_mas_compras INT;
+  DECLARE v_nombre_mas_compras VARCHAR(100);
+  DECLARE v_cant_compras INT;
+  DECLARE v_id_mas_gastado
