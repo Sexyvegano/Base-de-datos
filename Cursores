@@ -1,4 +1,4 @@
--- Listar productos con Cursores
+--1 Listar productos con Cursores
 DELIMITER //
 
 CREATE PROCEDURE listar_productos()
@@ -29,7 +29,7 @@ END //
 
 DELIMITER ;
 
---Recorrer provincias
+--2 Recorrer provincias
 
 DELIMITER //
 
@@ -61,7 +61,7 @@ END //
 
 DELIMITER ;
 
--- Productos sin stock
+--3 Productos sin stock
 DELIMITER //
 
 CREATE PROCEDURE productos_sin_stock()
@@ -90,7 +90,7 @@ END //
 
 DELIMITER ;
 
---Determinar categoria por precio
+--4 Determinar categoria por precio
 
 DELIMITER//
 BEGIN
@@ -128,7 +128,7 @@ END//
 
 DELIMITER;
 
--- calcular stock total
+--5 calcular stock total
 
 DELIMITER//
 BEGIN
@@ -163,7 +163,7 @@ END//
 
 DELIMITER;
 
---Aumentar precios: 20% si <10000 y 10% si => a 10000
+--6 Aumentar precios: 20% si <10000 y 10% si => a 10000
 
 DELIMETER//
 BEGIN
@@ -198,7 +198,7 @@ END//
 
 DELIMITER;
 
---Actualizar stock: +10 si < 5, +5 si >= 5 y <20
+--7 Actualizar stock: +10 si < 5, +5 si >= 5 y <20
 
 DELIMITER//
 BEGIN
@@ -234,7 +234,7 @@ END//
 
 DELIMITER;
 
---Listar compras con informacion del cliente
+--8 Listar compras con informacion del cliente
 
 DELIMITER//
 BEGIN
