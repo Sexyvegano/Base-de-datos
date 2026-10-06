@@ -81,3 +81,38 @@ BEGIN
 END//
 
 DELIMITER;
+
+--Actualizar stocks con tabla auditoria
+
+DELIMITER //
+
+CREATE PROCEDURE reponer_stock_con_auditoria();
+BEGIN
+  DECLARE v_id INT;
+  DECLARE v_nombre VARCHAR(100);
+  DECLARE v_stock INT,
+  DECLARE fin INT DEFAULT FALSE;
+
+  DECLARE cur_reponer_stock CURSOR FOR
+    SELECT id, nombre, stock FROM productos;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin = TRUE;
+
+  OPEN cur_reponer_stock;
+
+  bucle:LOOP
+    FETCH cur_reponer_stock INTO v_id, v_nombre, v_stock;
+    IF fin THEN
+      LEAVE bucle;
+    END IF;
+    IF v_stock < 5 THEN
+      UPDATE productos SET stock = stock + 20 WHERE id = v_id;
+      SELECT CONCAT('Se repusieron + 20 unidades en el producto', v_nombre, ' | Anterior stock: ', v_stock) AS Info;
+      INSERT INTO auditoria_stock(id_producto, fecha, descripcion)
+        VALUES(v_id, NOW(), CONCAT('Se repusieron + 20 unidades en el producto', v_nombre, ' | Anterior stock: ', v_stock);
+    END IF;
+  END LOOP;
+  CLOSE cur_reponer_stock;
+END//
+
+DELIMITER;
