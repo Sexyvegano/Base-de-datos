@@ -141,3 +141,41 @@ BEGIN
   DECLARE v_nombre_mas_compras VARCHAR(100);
   DECLARE v_cant_compras INT;
   DECLARE v_id_mas_gastado
+  DECLARE v_nombre_mas_gastado VARCHAR(100);
+  DECLARE v_total_gastado DECIMAL (12,2);
+  DECLARE fin INT DEFAULT FALSE;
+
+  DECLARE cur_ciudades CURSOR FOR
+    SELECT DISTINCT ciudad FROM clientes WHERE ciudad IS NOT NULL;
+
+  DECLARE CONTINUE HANDLER FOR NOR FOUND SET fin = TRUE;
+
+  OPEN cur_ciudades;
+
+  bucle:LOOP
+    FETCH cur_ciudades INTO v_ciudad;
+    IF fin THEN
+      LEAVE bucle;
+    END IF;
+
+    SELECT c.id, c.nombre, contar_compras_clientes(c.id) AS total_compras
+    INTO v_id_mas_compras, v_nombre_mas_compras, v_cant_compras
+    FROM clientes c
+    WHERE c.ciudad = v_ciudad
+    ORDER BY total_compras DESC, c.id ASC
+    LIMIT 1;
+
+    SELECT c.id, c.nombre, SUM(co.monto_total) AS total_gastado
+    INTO v_id_mas_gastado, v_nombre_mas_gastado, v_total_gastado
+    FROM clientes c
+    JOIN compras co ON c.id = co.id_cliente
+    ORDER BY v_total_gastado DESC, c.id ASC
+    LIMIT 1;
+
+    SELECT CONCAT('Cliente con mas compras: ', v_nombre_mas_compras, ' | Cantidad de compras: ', v_cant_compras) AS Mascompras;
+    SELECT CONCAT('Cliente que mas gast0: ', v_nombre_mas_gastado, ' | Cantidad gastada: $', v_total_gastado) AS Masgastado;
+  END LOOP;
+  CLOSE cur_ciudades;
+END //
+
+DELIMITER;
