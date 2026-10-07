@@ -10,6 +10,7 @@ FOR EACH ROW
     SET MESSAGE_TEXT = 'Fecha de publicacion no valida, Comprobar fecha de publicacion';
     LEAVE;
   END IF;
+END;
 
 DELIMITER ;
 
@@ -18,10 +19,31 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER nombre_corto_libro
-BEFORE INSERT INTO libros
+BEFORE INSERT INTO usuarios
 FOR EACH ROW
 BEGIN //
 
-  IF LENGHT(TRIM(NEW.nombre)) < 3 THEN
-    SET MESSAGE_TEXT = 'Nombre de libro invalido, nombre menor a 3 caracteres'
-    
+  IF LENGHT(TRIM(NEW.usuario)) < 3 THEN
+    SET MESSAGE_TEXT = 'Nombre de usuario invalido, nombre menor a 3 caracteres'
+  END IF;
+
+END;
+
+DELIMITER ;
+
+--3 impedir que la fecha de devolucion sea menor a la fecha de prestamo
+
+DELIMITER //
+
+CREATE TRIGGER fecha_erronea
+BEFORE INSERT INTO prestamos
+FOR EACH ROW
+BEGIN //
+
+  IF NEW.fecha_devolucion < NEW.fecha_prestamo THEN
+    SET MESSAGE_TEXT = 'La fecha de devolucion es anterior a la de prestamo';
+    LEAVE;
+  END IF;
+END;
+
+DELIMITER ;
