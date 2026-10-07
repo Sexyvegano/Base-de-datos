@@ -1,0 +1,27 @@
+--1 impedir fecha ilogica en libro
+
+DELIMITER //
+
+CREATE TRIGGER fecha_incorrecta
+AFTER INSERT ON libros
+FOR EACH ROW
+
+  IF NEW.fecha_libro > NOW() THEN
+    SET MESSAGE_TEXT = 'Fecha de publicacion no valida, Comprobar fecha de publicacion';
+    LEAVE;
+  END IF;
+
+DELIMITER ;
+
+--2 Nombre de libro con menos de 3 caracteres
+
+DELIMITER //
+
+CREATE TRIGGER nombre_corto_libro
+BEFORE INSERT INTO libros
+FOR EACH ROW
+BEGIN //
+
+  IF LENGHT(TRIM(NEW.nombre)) < 3 THEN
+    SET MESSAGE_TEXT = 'Nombre de libro invalido, nombre menor a 3 caracteres'
+    
