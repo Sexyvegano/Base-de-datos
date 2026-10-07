@@ -32,3 +32,20 @@ DELIMITER ;
 CREATE USER 'gestor_inventarios'@'localhost' IDENTIFIED BY 'yoborroloquequiero';
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON productos TO 'gestor_inventarios'@'localhost';
+
+FLUSH PRIVILEGES;
+
+--3 Gerente de usuarios y compras (ahora pruebo con roles)
+
+CREATE ROLE 'admin_usuarios';
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON clientes TO 'admin_usuarios';
+GRANT SELECT, INSERT, UPDATE, DELETE ON compras TO 'admin_usuarios';
+
+FLUSH PRIVILEGES;
+
+--4 joaquin boraste la base de datos
+
+REVOKE DELETE ON * TO 'Usuario2'@'localhost';
+
+--5
