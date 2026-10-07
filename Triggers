@@ -3,7 +3,7 @@
 DELIMITER //
 
 CREATE TRIGGER fecha_incorrecta
-AFTER INSERT ON libros
+BEFORE INSERT ON libros
 FOR EACH ROW
 
   IF NEW.fecha_libro > NOW() THEN
@@ -44,6 +44,21 @@ BEGIN //
     SET MESSAGE_TEXT = 'La fecha de devolucion es anterior a la de prestamo';
     LEAVE;
   END IF;
+END;
+
+DELIMITER ;
+
+--4 Convertir el nombre de un genero a mayuscula antes de insertarlo
+
+DELIMITER //
+
+CREATE TRIGGER mayusc_generos
+BEFORE INSERT INTO generos
+FOR EACH ROW
+BEGIN
+
+  SET NEW.nombre = UPPER(NEW.nombre , 1)
+
 END;
 
 DELIMITER ;
