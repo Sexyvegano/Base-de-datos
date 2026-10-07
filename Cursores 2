@@ -200,3 +200,66 @@ BEGIN
 END //
 
 DELIMITER
+
+DELIMETER //
+
+CREATE PROCEDURE reporte_completo_provincias()
+BEGIN
+
+  DECLARE v_provincia VARCHAR(100);
+  DECLARE fin_prov INT DEFAULT DETERMINISTIC;
+  DECLARE v_id_cliente INT;
+  DECLARE v_nombre VARCHAR(100);
+  DECLARE v_gasto DECIMAL(12,2);
+  DECLARE fin_cli INT DEFAULT FALSE;
+
+  DECLARE cur_provincias CURSOR FOR
+    SELECT DISTINCT provincia FROM cliente WHERE provincia IS NOT NULL;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin_prov = TRUE;
+
+  OPEN cur_provincias;
+
+  bucle:LOOP
+    FETCH cur_provincias
+      INTO v_provincia;
+    IF fin_prov THEN
+      LEAVE bucle;
+    END IF;
+
+    SELECT CONCAT('Provincia: ', v_provincia) AS Titulo;
+
+    BEGIN
+
+      DECLARE cur_clientes CURSOR INTO
+        SELECT id, nombre FROM clientes WHERE provincia = v_provincia;
+
+      DECLARE CONTINUE HANDLER FOR NOR FOUND SET fin_cli = TRUE;
+      
+      SET fin_cli = FALSE;
+      OPEN cur_cli;
+
+      bucle:LOOP
+        FETCH cur_cli INTO
+          v_id_cliente, v_nombre;
+
+        IF fin_cli THEN
+          LEAVE bucle;
+        END IF;
+
+        SET v_gasto = dinero_gastado_cliente(v_id_cliente);
+
+        SELECT CONCAT('cliente: ', v_nombre, ' | Dinero gastado; $', v_gasto) AS Info;
+
+      END LOOP;
+
+      CLOSE cur_clientes;
+    END;
+
+  END LOOP;
+
+  CLOSE cur_provincias;
+
+END //
+
+DELIMETER ;
