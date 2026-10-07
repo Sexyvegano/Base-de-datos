@@ -1,0 +1,34 @@
+--1 Crear un administrador de zonas
+
+CREATE VIEW vista_segura_usuarios AS
+SELECT id, nombre
+FROM usuarios;
+
+CREATE USER 'administrador_de_zonas'@'localhost' IDENTIFIED BY 'altacontra67';
+
+GRANT SELECT ON provincias TO 'administrador_de_zonas'@'localhost';
+GRANT SELECT ON ciudades TO 'administrador_de_zonas'@'localhost';
+GRANT SELECT ON vista_segura_usuarios 'administrador_de_zonas'@'localhost';
+
+FLUSH PRIVILEGES;
+
+--2 Crear un gestor de inventario
+
+DELIMITER //
+
+CREATE TRIGGER todavia_hay_stock()
+BEFORE DELETE ON productos
+FOR EACH ROW
+BEGIN
+
+  IF OLD.stock > 0 THEN
+    SET MESSAGE_TEXT ='Todavia queda stock'
+    LEAVE;
+  END IF;
+END //
+
+DELIMITER ;
+
+CREATE USER 'gestor_inventarios'@'localhost' IDENTIFIED BY 'yoborroloquequiero';
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON productos TO 'gestor_inventarios'@'localhost';
