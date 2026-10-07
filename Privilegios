@@ -16,7 +16,7 @@ FLUSH PRIVILEGES;
 
 DELIMITER //
 
-CREATE TRIGGER todavia_hay_stock()
+CREATE TRIGGER todavia_hay_stock
 BEFORE DELETE ON productos
 FOR EACH ROW
 BEGIN
@@ -48,4 +48,32 @@ FLUSH PRIVILEGES;
 
 REVOKE DELETE ON * TO 'Usuario2'@'localhost';
 
---5
+--5 Tabla auditoria para todos los cambios de usuarios
+
+DELIMETER //
+
+  CREATE TRIGGER auditoria_insert
+  AFTER INSERT INTO productos
+  FOR EACH ROW
+  BEGIN //
+    INSERT INTO auditoria(accion, tiempo)
+      VALUES(CONCAT('Producto insertado: ', NEW.nombre, ' | Precio: $', NEW.precio, ' | Stock: ', NEW.stock), NOW());
+  END//
+
+  CREATE TRIGGER auditoria_delete
+  AFTER delete INTO productos
+  FOR EACH ROW
+  BEGIN //
+    INSERT INTO auditoria(accion, tiempo)
+      VALUES(CONCAT('Producto borrado: ', OLD.nombre, ' | Precio: $', OLD.precio, ' | Stock: ', OLD.stock), NOW());
+  END//
+
+  CREATE TRIGGER auditoria_update
+  AFTER update INTO productos
+  FOR EACH ROW
+  BEGIN //
+    INSERT INTO auditoria(accion, tiempo)
+      VALUES(CONCAT('Producto modificado: ', OLD.nombre, '=>', NEW.nombre ,' | Precio: $', OLD.precio, '=>', NEW.precio, ' | Stock: ', OLD.stock, '=>', NEW.stock), NOW());
+  END//
+
+DELIMETER ;
