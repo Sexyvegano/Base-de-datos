@@ -180,4 +180,23 @@ END //
 
 DELIMITER;
 
---5
+--5 Total gastado por cada cliente de cada provincia
+
+DELIMETER //
+
+CREATE FUNCTION dinero_gastado_cliente(p_cliente_id INT)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+
+  DECLARE v_monto_total(12,2);
+  SELECT SUM(monto_total)
+  INTO v_monto_total
+  FROM compras
+  WHERE id_cliente = p_cliente_id;
+
+  RETURN v_monto_total;
+
+END //
+
+DELIMITER
