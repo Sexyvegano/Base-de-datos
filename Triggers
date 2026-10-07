@@ -19,7 +19,7 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER nombre_corto_libro
-BEFORE INSERT INTO usuarios
+BEFORE INSERT ON usuarios
 FOR EACH ROW
 BEGIN //
 
@@ -36,7 +36,7 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER fecha_erronea
-BEFORE INSERT INTO prestamos
+BEFORE INSERT ON prestamos
 FOR EACH ROW
 BEGIN //
 
@@ -53,12 +53,37 @@ DELIMITER ;
 DELIMITER //
 
 CREATE TRIGGER mayusc_generos
-BEFORE INSERT INTO generos
+BEFORE INSERT ON generos
 FOR EACH ROW
 BEGIN
 
-  SET NEW.nombre = UPPER(NEW.nombre , 1)
+  SET NEW.nombre = UPPER(TRIM(NEW.nombre));
 
 END;
 
 DELIMITER ;
+
+--5 Convertir el nombre de autor a formato titulo
+
+DELIMITER //
+
+CREATE TRIGGER nombre_autor_mayusc
+BEFORE INSERT ON autores
+FOR EACH ROW
+BEGIN //
+
+  SET NEW.nombre INTO UPPER(TRIM(NEW.nombre));
+
+END;
+
+DELIMITER ;
+
+--6 Despues de 2 meses dar por perdido
+
+DELIMITER //
+
+CREATE TRIGGER libro_perdido
+AFTER UPDATE ON prestamos
+FOR EACH ROW
+
+  IF 
